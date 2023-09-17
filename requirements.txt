@@ -2,7 +2,7 @@ sqlmodel==0.0.8
 fastapi==0.103.1
 uvicorn[standard]==0.23.2
 
-pylint==2.15.9 # 構文解析
+pylint==2.15.9
 pep8==1.7.1 # PEP8
 doq==0.9.1 # autoDocstring
 flake8==6.1.0
