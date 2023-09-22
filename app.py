@@ -3,6 +3,7 @@
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from api.test_model import test
 
 app = FastAPI()
 origins = [
@@ -19,7 +20,8 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    response = test()
+    return response
 
 @app.post("/room/create/{roomName}")
 def create_room(roomName: str):
