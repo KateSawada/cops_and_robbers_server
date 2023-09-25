@@ -14,11 +14,6 @@ tags:
     externalDocs:
       description: Find out more room
       url: http://swagger.io
-  - name: team
-    description: 自分の所属するチーム(逮捕中かどうかも含め)わかるようにする
-    externalDocs:
-      description: Find out more about our team
-      url: http://swagger.io
   - name: position
     description: 位置情報
     externalDocs:
@@ -37,7 +32,7 @@ paths:
         - room
       summary: roomを作る
       description: roomを作った人にroomIDを渡すようにする
-      operationId: createRoom
+      operationId: create_room
       requestBody:
         description: roomを作る
         content:
@@ -68,7 +63,7 @@ paths:
         - room
       summary: roomに参加する
       description: roomIDを持った人がそのroomに参加できるようにする
-      operationId: joinRoom
+      operationId: join_room
       requestBody:
         description: roomに入る
         content:
@@ -76,9 +71,9 @@ paths:
             schema:
               type: object
               properties: 
-                roomID:
+                room_id:
                   type: integer
-                userName:
+                user_name:
                   type: string
       responses:
         '200':
@@ -101,11 +96,18 @@ paths:
   /team/check:
     get:
       tags:
-        - team
+        - room
       summary: 誰がどのチームに入ってるかを返す
       description: Roomに参加している人全ての情報(警察/泥棒/捕まってる)を返す
-      operationId: checkTeam
-      
+      operationId: check_team
+      parameters:
+        - name: room_id
+          in: query
+          description: 見たい人のroom-id
+          required: true
+          schema:
+            type: integer
+
       responses:
         '200':
           description: successful operation
@@ -130,7 +132,14 @@ paths:
         - position
       summary: 位置情報を取得する
       description: 位置情報を取得する
-      operationId: GetPosition
+      operationId: get_position
+      parameters:
+        - name: room_id
+          in: query
+          description: 見たい人が入ってるroomのroom-id
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: successful operation
@@ -153,14 +162,14 @@ paths:
         - position
       summary: 自分の位置情報を送る
       description: '自分の位置情報を送る'
-      operationId: sendPosition
+      operationId: send_position
       parameters:
-        - name: userName
+        - name: user_id
           in: query
-          description: 送る人の名前
+          description: 送る人のuser-id
           required: true
           schema:
-            type: string
+            type: integer
         
         - name: GPS
           in: query
@@ -181,7 +190,14 @@ paths:
         - chat
       summary: チャットの内容を見る
       description: チャットの内容を見る
-      operationId: GetChatContent
+      operationId: get_chat_content
+      parameters:
+        - name: room_id
+          in: query
+          description: 見るchatがどのroomのものか
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: successful operation
@@ -204,9 +220,9 @@ paths:
         - chat
       summary: チャットで投稿する
       description: '送った人の名前と時間と送ったメッセージ(画像も含む)が送れる'
-      operationId: sendChat
+      operationId: send_chat
       parameters:
-        - name: userName
+        - name: user_name
           in: query
           description: 送る人の名前
           required: true
@@ -244,11 +260,11 @@ components:
     Room:
       type: object
       properties:
-        id:
+        room_id:
           type: integer
           format: int64
           example: 100000
-        name:
+        room_name:
           type: string
         member:
           $ref: '#/components/schemas/User'
@@ -258,7 +274,7 @@ components:
     Mission:
       type: object
       properties:
-        id:
+        mission_id:
           type: integer
           format: int64
           example: 1
@@ -270,15 +286,15 @@ components:
     User:
       type: object
       properties:
-        id:
+        user_id:
           type: integer
           format: int64
           example: 10
-        username:
+        user_name:
           type: string
           example: theUser
         
-        userStatus:
+        user_status:
           type: string
           description: User Status
           enum:
@@ -291,7 +307,7 @@ components:
     Chat:
       type: object
       properties:
-        id:
+        chat_id:
           type: integer
           format: int64
         name:
@@ -304,11 +320,11 @@ components:
     Position:
       type: object
       properties:
-        id:
+        position_id:
           type: integer
           format: int64
-        Username:
-          type: string
+        user_id:
+          type: integer
      
       xml:
         name: chat
