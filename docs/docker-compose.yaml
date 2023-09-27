@@ -1,0 +1,33 @@
+# 参考
+# https://qiita.com/A-Kira/items/3d17396c7cc98873e29d
+
+version: "3.9"
+
+services:
+  swagger-editor:
+    image: swaggerapi/swagger-editor
+    container_name: "swagger-editor"
+    ports:
+      - "8001:8080"
+    platform: linux/amd64
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: "swagger-ui"
+    ports:
+      - "8002:8080"
+    volumes:
+      - ./openapi.yaml:/openapi.yaml
+    environment:
+      SWAGGER_JSON: /openapi.yaml
+    platform: linux/amd64
+
+  swagger-api:
+    image: stoplight/prism:3
+    container_name: "swagger-api"
+    ports:
+      - "8080:4010"
+    command: mock -h 0.0.0.0 /openapi.yaml
+    volumes:
+      - ./openapi.yaml:/openapi.yaml
+    platform: linux/amd64
