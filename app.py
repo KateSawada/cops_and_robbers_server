@@ -8,6 +8,7 @@ from sqlmodel import Field, Session, SQLModel, create_engine, select
 from pydantic import BaseModel
 from models import Room
 from models import RoomUser
+from models import User
 app = FastAPI()
 origins = [
     "http://localhost:3000",
@@ -28,9 +29,10 @@ connect_args = {"check_same_thread": False}
 engine = create_engine(sqlite_url, echo=True, connect_args=connect_args)
 
 #requestbodyを定義する
-class RoomId(BaseModel):
+class JoinRoomRequest(BaseModel):
     room_id: int
     user_id:int
+    user_name:str
     
 @app.get("/")
 def read_root():
@@ -48,27 +50,24 @@ def create_room(roomName: str):
      
     return response
 
-@app.post("/room/join")
-#room_id,加わる人の名前,を受け取る
-def join_room(join_data:RoomId):
-    room_user1 = RoomUser(user_id=join_data.user_id,room_id=join_data.room_id)
-    #RoomUserテーブルにデータを入れる
-    with Session(engine) as session:
-        session.add(room_user1)
-        session.commit()
-        session.refresh(room_user1)
-    
+@app.post("/room/join/{user_name}/{room_id}")
 
-    # response: object = {
-    #     "id": 100000,
-    #     "name": "string",
-    #     "member": {
-    #         "id": 10,
-    #         "user_name": "theUser",
-    #         "user_status": "police"
-    #     }
-    # }
-        return None
+#room_id,加わる人の名前,を受け取る
+def join_room(user_name: str,room_id: int):
+     #Userテーブルにuser_nameを入れる(user)
+    with Session(engine) as session:
+        new_room_username = User(name = user_name,status="police",gps="")
+        session.add(new_room_username)
+        session.commit()
+        session.refresh(new_room_username)
+        new_user_id = new_room_username.id
+    with Session(engine) as session:
+        new_room_id = RoomUser(user_id=new_user_id,room_id=room_id)
+        session.add(new_room_id)
+        session.commit()
+        session.refresh(new_room_id)
+        
+    return None
 
 @app.post("/team/check")
 def team_check():
